@@ -1,4 +1,4 @@
-import type { Category, DashboardMetrics, FixedExpense, LedgerState, MonthlySummary, SpendingLevel, Transaction } from '../types';
+import type { Category, DashboardMetrics, FixedExpense, HeatmapLevel, LedgerState, MonthlySummary, SpendingLevel, SpendingRiskLevel, ThemeName, Transaction } from '../types';
 import { currentMonthKey, getMonthDays, getRemainingDaysInMonth } from './date';
 
 export const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
@@ -150,4 +150,65 @@ export const getDailyCalendarCells = (monthKey: string) => {
     ...Array.from({ length: firstDay }, () => ''),
     ...Array.from({ length: days }, (_, index) => `${monthKey}-${String(index + 1).padStart(2, '0')}`),
   ];
+};
+
+export const calculateRecentAverageExpense = (transactions: Transaction[], days = 7, today = new Date()) => {
+  const start = new Date(today);
+  start.setDate(today.getDate() - days + 1);
+  const startKey = start.toISOString().slice(0, 10);
+  const todayKey = today.toISOString().slice(0, 10);
+  const total = transactions
+    .filter((item) => item.type === 'expense' && item.date >= startKey && item.date <= todayKey)
+    .reduce((sumValue, item) => sumValue + item.amount, 0);
+  return total / Math.max(days, 1);
+};
+
+export const calculateDailySafeAmount = (totalRemaining: number, daysRemaining: number) =>
+  totalRemaining / Math.max(daysRemaining, 1);
+
+export const getSpendingRiskLevel = (recentAverageExpense: number, safeDailyAmount: number): SpendingRiskLevel => {
+  if (safeDailyAmount <= 0) return 'danger';
+  if (recentAverageExpense > safeDailyAmount * 1.25) return 'danger';
+  if (recentAverageExpense > safeDailyAmount * 0.9) return 'caution';
+  return 'safe';
+};
+
+export const getSpendingRiskMessage = (riskLevel: SpendingRiskLevel) => {
+  if (riskLevel === 'danger') return '현재 속도라면 예상보다 빨리 부족해질 수 있어요.';
+  if (riskLevel === 'caution') return '조금만 조절하면 더 안정적으로 유지할 수 있어요.';
+  return '좋아요. 현재 속도라면 충분히 유지할 수 있어요.';
+};
+
+export const getTopExpenseCategory = (transactions: Transaction[], year: number, month: number) => {
+  const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+  const totals = getCategoryTotals(transactions, monthKey);
+  const entries = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+  return entries[0] ?? null;
+};
+
+export const getDailyExpenseMap = (transactions: Transaction[], year: number) => {
+  const map = new Map<string, number>();
+  transactions
+    .filter((item) => item.type === 'expense' && item.date.startsWith(String(year)))
+    .forEach((item) => map.set(item.date, (map.get(item.date) ?? 0) + item.amount));
+  return map;
+};
+
+export const getDailyExpenseLevel = (dayExpense: number, dailyExpenseValues: number[]): HeatmapLevel => {
+  if (dayExpense <= 0) return 'none';
+  const max = Math.max(...dailyExpenseValues, 0);
+  if (max <= 0) return 'none';
+  const ratio = dayExpense / max;
+  if (ratio <= 0.25) return 'low';
+  if (ratio <= 0.5) return 'medium';
+  if (ratio <= 0.75) return 'high';
+  return 'veryHigh';
+};
+
+export const getHeatmapColor = (level: HeatmapLevel, _selectedTheme?: ThemeName) => {
+  if (level === 'low') return 'bg-[rgba(var(--theme-mid),.28)] text-[rgb(var(--theme-text))]';
+  if (level === 'medium') return 'bg-[rgba(var(--theme-mid),.48)] text-[rgb(var(--theme-text))]';
+  if (level === 'high') return 'bg-[rgba(var(--theme-mid),.72)] text-white';
+  if (level === 'veryHigh') return 'bg-[rgb(var(--theme-strong))] text-white';
+  return 'bg-slate-100 text-muted';
 };

@@ -7,10 +7,11 @@ import { themeOptions } from '../utils/themes';
 interface SettingsProps {
   state: LedgerState;
   updateAppSettings: (settings: Partial<AppSettings>) => void;
+  restartOnboarding: () => void;
   reset: () => void;
 }
 
-export function Settings({ state, updateAppSettings, reset }: SettingsProps) {
+export function Settings({ state, updateAppSettings, restartOnboarding, reset }: SettingsProps) {
   return (
     <div className="space-y-6">
       <header>
@@ -58,7 +59,10 @@ export function Settings({ state, updateAppSettings, reset }: SettingsProps) {
       <Card>
         <p className="font-black">데이터 관리</p>
         <p className="mt-2 text-sm text-muted">입력한 데이터와 앱 설정은 이 브라우저의 localStorage에 저장됩니다.</p>
-        <button className="btn-secondary mt-4" onClick={reset} type="button">초기화</button>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button className="btn-secondary" onClick={restartOnboarding} type="button">온보딩 다시 보기</button>
+          <button className="btn-muted" onClick={reset} type="button">초기화</button>
+        </div>
       </Card>
     </div>
   );

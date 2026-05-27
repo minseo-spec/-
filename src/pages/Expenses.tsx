@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { Pencil, Trash2, X } from 'lucide-react';
 import { Card } from '../components/Card';
+import { QuickExpense } from '../components/QuickExpense';
 import { categories } from '../data/mockData';
 import type { Category, Transaction } from '../types';
 import { currentDateKey, currentMonthKey } from '../utils/date';
@@ -93,6 +94,14 @@ export function Expenses({ transactions, allowanceMode, addTransaction, updateTr
         <h2 className="mt-2 text-3xl font-black">{allowanceMode ? '사용 내역 기록' : '지출 기록'}</h2>
         <p className="mt-2 text-sm font-bold text-muted">여기서 입력한 {allowanceMode ? '사용 내역' : '지출'}이 대시보드, 달력, 12개월, 분석에 함께 반영됩니다.</p>
       </header>
+
+      <Card>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-lg font-black">빠른 입력</h3>
+          <p className="text-sm font-semibold text-muted">카테고리를 고르고 금액만 입력하면 저장돼요.</p>
+        </div>
+        <QuickExpense onAdd={addTransaction} />
+      </Card>
 
       <Card>
         <form onSubmit={submit} className="grid gap-3 lg:grid-cols-[150px_1fr_160px_160px_1fr_110px]">

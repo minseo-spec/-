@@ -4,6 +4,7 @@ export const categories = ['식비', '교통', '쇼핑', '구독', '병원', '�
 
 export const initialLedgerState: LedgerState = {
   totalAssets: 0,
+  onboardingCompleted: false,
   dashboardOverrides: {},
   transactions: [],
   fixedExpenses: [],

@@ -41,7 +41,7 @@ export function Layout({ children, page, allowanceMode, selectedTheme, onNavigat
             return (
               <button
                 key={itemPage}
-                className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg px-2 text-xs font-bold transition lg:flex-none lg:justify-start lg:px-4 lg:text-sm ${
+                className={`flex min-h-14 flex-1 items-center justify-center gap-2 rounded-lg px-2 text-xs font-bold transition lg:min-h-12 lg:flex-none lg:justify-start lg:px-4 lg:text-sm ${
                   active ? 'bg-[rgb(var(--theme-strong))] text-white' : 'text-muted hover:bg-white'
                 }`}
                 onClick={() => onNavigate(itemPage)}

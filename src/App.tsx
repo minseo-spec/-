@@ -11,6 +11,7 @@ import { FixedExpenses } from './pages/FixedExpenses';
 import { SavingsGoals } from './pages/SavingsGoals';
 import { AnalysisForecast } from './pages/AnalysisForecast';
 import { Settings } from './pages/Settings';
+import { Onboarding } from './pages/Onboarding';
 import { getDashboardMetrics } from './utils/calculations';
 import { currentDateKey, currentMonthKey } from './utils/date';
 
@@ -20,6 +21,20 @@ export default function App() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonthKey());
   const [selectedDate, setSelectedDate] = useState(currentDateKey());
   const metrics = getDashboardMetrics(state);
+
+  if (!state.onboardingCompleted) {
+    return (
+      <Onboarding
+        setTotalAssets={actions.setTotalAssets}
+        setDashboardOverride={actions.setDashboardOverride}
+        updateAllowanceSettings={actions.updateAllowanceSettings}
+        updateAppSettings={actions.updateAppSettings}
+        addTransaction={actions.addTransaction}
+        addFixedExpense={actions.addFixedExpense}
+        completeOnboarding={actions.completeOnboarding}
+      />
+    );
+  }
 
   return (
     <Layout
@@ -98,7 +113,7 @@ export default function App() {
         />
       )}
       {page === 'analysis' && <AnalysisForecast state={state} />}
-      {page === 'settings' && <Settings state={state} updateAppSettings={actions.updateAppSettings} reset={actions.reset} />}
+      {page === 'settings' && <Settings state={state} updateAppSettings={actions.updateAppSettings} restartOnboarding={actions.restartOnboarding} reset={actions.reset} />}
     </Layout>
   );
 }

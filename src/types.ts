@@ -80,6 +80,7 @@ export interface AppSettings {
 
 export interface LedgerState {
   totalAssets: number;
+  onboardingCompleted: boolean;
   dashboardOverrides: DashboardOverrides;
   transactions: Transaction[];
   fixedExpenses: FixedExpense[];
@@ -106,3 +107,5 @@ export interface DashboardMetrics {
 }
 
 export type SpendingLevel = 'lowest' | 'low' | 'average' | 'high' | 'highest';
+export type SpendingRiskLevel = 'safe' | 'caution' | 'danger';
+export type HeatmapLevel = 'none' | 'low' | 'medium' | 'high' | 'veryHigh';

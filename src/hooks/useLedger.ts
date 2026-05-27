@@ -11,6 +11,7 @@ export function useLedger() {
     const parsed = saved ? JSON.parse(saved) as LedgerState : initialLedgerState;
     return stripSeedData({
       ...parsed,
+      onboardingCompleted: parsed.onboardingCompleted ?? false,
       dashboardOverrides: parsed.dashboardOverrides ?? {},
       monthlySettings: parsed.monthlySettings ?? {},
       allowanceSettings: parsed.allowanceSettings ?? initialLedgerState.allowanceSettings,
@@ -73,6 +74,10 @@ export function useLedger() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
         return next;
       }),
+    completeOnboarding: () =>
+      setState((current) => ({ ...current, onboardingCompleted: true })),
+    restartOnboarding: () =>
+      setState((current) => ({ ...current, onboardingCompleted: false })),
     addFixedExpense: (expense: Omit<FixedExpense, 'id'>) =>
       setState((current) => ({
         ...current,
@@ -124,6 +129,7 @@ function stripSeedData(state: LedgerState): LedgerState {
 
   return {
     ...state,
+    onboardingCompleted: state.onboardingCompleted ?? false,
     dashboardOverrides,
     monthlySettings: state.monthlySettings ?? {},
     allowanceSettings: state.allowanceSettings ?? initialLedgerState.allowanceSettings,
